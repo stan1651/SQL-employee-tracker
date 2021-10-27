@@ -84,7 +84,7 @@ function mainPrompt() {
 function viewAllEmployees() {
     db.queryAllEmployees()
     .then(([rows]) => {
-        let employees = rows;
+        let employee = rows;
         console.table(employee);
     }).then(() => mainPrompt())
 
@@ -92,11 +92,11 @@ function viewAllEmployees() {
 function viewAllDepartments() {
     db.queryAllDepartments()
     .then(([rows]) => {
-        let departments = rows;
+        let department = rows;
         console.table(department);
     }).then(() => mainPrompt())
 }
-function addDepartment() {
+ function addDepartment() {
   inquirer.prompt({
     name:"addDepartment",
     type:"input",
@@ -111,22 +111,46 @@ function addDepartment() {
 
 function viewEmployeesManager() {
     db.findAllPossibleManagers()
-}
-function addEmployee() {
-  inquirer.prompt({
-    name:"addEmployee",
-    type:"input",
-    message:"What is the new employee name?"
-  })
-    db.createEmployee()
     .then(([rows]) => {
-        let employee = rows;
-        console.table(employee);
+      let employee = rows;
+      console.table(employee);
     }).then(() => mainPrompt())
 }
-  
+
+function addEmployee() {
+  inquirer.prompt([
+    {
+    type:"input",
+    message:"What is the new employee first name?",
+    name: "first_name",
+  },
+  {
+    type:"input",
+    message:"What is the employees last name?",
+    name:"last_name",
+  },
+  {
+    type:"input",
+    message:"What is the employees role?",
+    name:"role_id"
+  }]
+  )
+  .then(function (response) {
+    console.log (response);
+    db.query("INSERT INTO employee SET ?",
+    {
+      first_name: response.first_name, last_name: response.last_name, role_id: response.role_id
+    }, function (err, res) {
+      if (err) throw err;
+      console.table(res);
+      console.log("The employee has been added.")
+      mainPrompt()
+    })
+  });
+}
 
 
 function exit() {
-
+  
 }
+  
